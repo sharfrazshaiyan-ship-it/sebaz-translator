@@ -207,7 +207,7 @@
             });
         }
 
-        // Expanded Base Vocabulary Dictionary (English -> Sebaz)
+        // English -> Sebaz Dictionary
         const enToSebazDict = {
             "glory to sebaz": "slova sebaz",
             "glory to calgara": "slova calgara",
@@ -242,12 +242,12 @@
             "glory": "slova",
             "nigga": "negi",
             "niggas": "negis",
-            "nigger": "negi",
-            "niggers": "negis",
+            "nigger": "negri",
+            "niggers": "negris",
             "i": "yu",
             "the": "tse",
             "this": "tisn",
-            "bro": "bro",
+            "bro": "cro",
             "traitor": "rjker",
             "theme": "tihim",
             "meet": "deikh",
@@ -326,19 +326,24 @@
             "sebaz": "sebaz"
         };
 
-        // Custom Sebaz -> English dictionary mapping with "slova" rule context
+        // Sebaz -> English dictionary mapping
         const sebazToEnDict = {};
         Object.keys(enToSebazDict).forEach(k => { 
             sebazToEnDict[enToSebazDict[k]] = k; 
         });
 
-        // Specific overrides for Sebaz -> English
+        // Sebaz -> English specific overrides
         sebazToEnDict["slova sebaz"] = "glory to sebaz";
         sebazToEnDict["slova calgara"] = "glory to calgara";
         sebazToEnDict["slova"] = "glory";
         sebazToEnDict["yuo"] = "im";
         sebazToEnDict["dit"] = "dont";
         sebazToEnDict["dinet"] = "dont";
+        sebazToEnDict["cro"] = "bro";
+        sebazToEnDict["negi"] = "nigga";
+        sebazToEnDict["negis"] = "niggas";
+        sebazToEnDict["negri"] = "nigger";
+        sebazToEnDict["negris"] = "niggers";
 
         const banglishToEnDict = {
             "kemon": "how",
