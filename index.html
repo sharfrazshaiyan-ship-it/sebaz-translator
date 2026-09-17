@@ -112,54 +112,6 @@
             color: #51cf66;
         }
 
-        /* Dictionary Viewer Styling */
-        .dict-toggle-btn {
-            width: 100%;
-            padding: 10px;
-            margin-top: 25px;
-            background-color: #1a1a1a;
-            color: #4dabf7;
-            border: 1px solid #333;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .dict-container {
-            display: none;
-            margin-top: 15px;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 12px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 10px;
-            background-color: #2b2b2b;
-            color: #fff;
-            border: 1px solid #444;
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        .dict-list {
-            max-height: 250px;
-            overflow-y: auto;
-            border: 1px solid #2b2b2b;
-            border-radius: 6px;
-        }
-        .dict-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            border-bottom: 1px solid #2a2a2a;
-            font-size: 14px;
-        }
-        .dict-item:last-child { border-bottom: none; }
-        .dict-en { color: #aaa; }
-        .dict-sebaz { color: #51cf66; font-weight: bold; }
-
         /* Footer & Links Section */
         footer {
             margin-top: 30px;
@@ -231,13 +183,6 @@
         <div class="output-box" id="translationOutput">...</div>
 
         <button class="copy-btn" id="copyBtn" onclick="copyTranslation()">📋 Copy Translation</button>
-
-        <!-- Toggleable Dictionary Viewer -->
-        <button class="dict-toggle-btn" onclick="toggleDictionary()">📖 View Full Dictionary</button>
-        <div class="dict-container" id="dictContainer">
-            <input type="text" id="dictSearch" class="search-input" placeholder="Search English or Sebaz word..." oninput="filterDictionary()">
-            <div class="dict-list" id="dictList"></div>
-        </div>
     </div>
 
     <!-- Bottom Footer Section -->
@@ -262,6 +207,7 @@
             });
         }
 
+        // Expanded Base Vocabulary Dictionary (English -> Sebaz)
         const enToSebazDict = {
             "glory to sebaz": "slova sebaz",
             "glory to calgara": "slova calgara",
@@ -380,8 +326,13 @@
             "sebaz": "sebaz"
         };
 
+        // Custom Sebaz -> English dictionary mapping with "slova" rule context
         const sebazToEnDict = {};
-        Object.keys(enToSebazDict).forEach(k => { sebazToEnDict[enToSebazDict[k]] = k; });
+        Object.keys(enToSebazDict).forEach(k => { 
+            sebazToEnDict[enToSebazDict[k]] = k; 
+        });
+
+        // Specific overrides for Sebaz -> English
         sebazToEnDict["slova sebaz"] = "glory to sebaz";
         sebazToEnDict["slova calgara"] = "glory to calgara";
         sebazToEnDict["slova"] = "glory";
@@ -390,25 +341,78 @@
         sebazToEnDict["dinet"] = "dont";
 
         const banglishToEnDict = {
-            "kemon": "how", "kemon acho": "how are you", "kemon achen": "how are you",
-            "ki": "what", "kisu": "something", "shob": "everything", "bhai": "bro",
-            "bro": "bro", "shobai": "everyone", "dhonnobad": "thanks", "dhonnobadd": "thanks",
-            "ami": "i", "amra": "we", "tumi": "you", "apni": "you", "tui": "you",
-            "sokal": "morning", "raat": "night", "bhalo": "good", "valo": "good",
-            "thik": "yes", "ha": "yes", "na": "no", "shomoy": "time", "ebong": "and",
-            "ar": "and", "gorm": "hot", "thanda": "cold", "khobor": "news",
-            "kon": "which", "cha": "tea", "taratari": "quick", "bonduk": "gun"
+            "kemon": "how",
+            "kemon acho": "how are you",
+            "kemon achen": "how are you",
+            "ki": "what",
+            "kisu": "something",
+            "shob": "everything",
+            "bhai": "bro",
+            "bro": "bro",
+            "shobai": "everyone",
+            "dhonnobad": "thanks",
+            "dhonnobadd": "thanks",
+            "ami": "i",
+            "amra": "we",
+            "tumi": "you",
+            "apni": "you",
+            "tui": "you",
+            "sokal": "morning",
+            "raat": "night",
+            "bhalo": "good",
+            "valo": "good",
+            "thik": "yes",
+            "ha": "yes",
+            "na": "no",
+            "shomoy": "time",
+            "ebong": "and",
+            "ar": "and",
+            "gorm": "hot",
+            "thanda": "cold",
+            "khobor": "news",
+            "kon": "which",
+            "cha": "tea",
+            "taratari": "quick",
+            "bonduk": "gun"
         };
 
         const bnToEnDict = {
-            "হ্যালো": "hello", "হাই": "hi", "স্বাগতম": "welcome", "শুভকামনা": "greetings",
-            "বিদায়": "goodbye", "হ্যাঁ": "yes", "না": "no", "আমি": "i", "আমরা": "we",
-            "তুমি": "you", "আপনি": "you", "ভাই": "bro", "সবাই": "everyone", "ধন্যবাদ": "thanks",
-            "কেমন": "how", "আছো": "are", "আছেন": "are", "কী": "what", "কি": "what",
-            "ভাল": "good", "ভালো": "good", "জয়": "glory", "বিশ্বাসঘাতক": "traitor",
-            "প্রতিটি": "everything", "সব": "everything", "সকাল": "morning", "রাত": "night",
-            "ঠান্ডা": "cold", "গরম": "hot", "সময়": "time", "এবং": "and", "চা": "tea",
-            "কফি": "coffee", "দ্রুত": "quick", "ঘৃণা": "hate", "বন্দুক": "gun"
+            "হ্যালো": "hello",
+            "হাই": "hi",
+            "স্বাগতম": "welcome",
+            "শুভকামনা": "greetings",
+            "বিদায়": "goodbye",
+            "হ্যাঁ": "yes",
+            "না": "no",
+            "আমি": "i",
+            "আমরা": "we",
+            "তুমি": "you",
+            "আপনি": "you",
+            "ভাই": "bro",
+            "সবাই": "everyone",
+            "ধন্যবাদ": "thanks",
+            "কেমন": "how",
+            "আছো": "are",
+            "আছেন": "are",
+            "কী": "what",
+            "কি": "what",
+            "ভাল": "good",
+            "ভালো": "good",
+            "জয়": "glory",
+            "বিশ্বাসঘাতক": "traitor",
+            "প্রতিটি": "everything",
+            "সব": "everything",
+            "সকাল": "morning",
+            "রাত": "night",
+            "ঠান্ডা": "cold",
+            "গরম": "hot",
+            "সময়": "time",
+            "এবং": "and",
+            "চা": "tea",
+            "কফি": "coffee",
+            "দ্রুত": "quick",
+            "ঘৃণা": "hate",
+            "বন্দুক": "gun"
         };
 
         const enToBnDict = {};
@@ -520,27 +524,6 @@
                 }, 2000);
             });
         }
-
-        // Dictionary UI Functions
-        function toggleDictionary() {
-            const dictContainer = document.getElementById("dictContainer");
-            const btn = document.querySelector(".dict-toggle-btn");
-            if (dictContainer.style.display === "block") {
-                dictContainer.style.display = "none";
-                btn.innerText = "📖 View Full Dictionary";
-            } else {
-                dictContainer.style.display = "block";
-                btn.innerText = "✕ Close Dictionary";
-                filterDictionary();
-            }
-        }
-
-        function filterDictionary() {
-            const query = document.getElementById("dictSearch").value.toLowerCase();
-            const dictList = document.getElementById("dictList");
-            dictList.innerHTML = "";
-
-            const sortedEntries = Object.entries(enToSebazDict).sort((a, b) => a[0].localeCompare(b[0]));
-
-            sortedEntries.forEach(([en, sebaz]) => {
-                if (en.toLowerCase().includes(query) || sebaz.toLowerCase().includes(
+    </script>
+</body>
+</html>
