@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebaz Universal Translator</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#228be6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sebaz">
+
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            padding: 20px; 
+            background-color: #121212; 
+            color: #ffffff;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex: 1;
+        }
+        h2 { text-align: center; color: #4dabf7; margin-bottom: 15px; }
+        
+        .mode-select-box {
+            margin-bottom: 15px;
+            background-color: #1e1e1e;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .mode-select-box label {
+            color: #4dabf7;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            background-color: #2b2b2b;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        label { font-weight: bold; font-size: 14px; color: #aaa; }
+        .clear-btn {
+            background: none;
+            border: none;
+            color: #e03131;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+        .clear-btn:hover { text-decoration: underline; }
+        textarea { 
+            width: 100%; 
+            height: 100px; 
+            padding: 12px; 
+            font-size: 16px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            background-color: #1e1e1e;
+            color: #fff;
+            box-sizing: border-box; 
+            resize: vertical;
+        }
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background-color: #2f9e44;
+            color: white;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .copy-btn:active, .clear-btn:active { opacity: 0.8; }
+        .output-box { 
+            margin-top: 10px; 
+            padding: 15px; 
+            background: #1e1e1e; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            font-size: 18px; 
+            min-height: 50px; 
+            word-wrap: break-word;
+            color: #51cf66;
+        }
+
+        /* Dictionary Viewer Styling */
+        .dict-toggle-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 25px;
+            background-color: #1a1a1a;
+            color: #4dabf7;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .dict-container {
+            display: none;
+            margin-top: 15px;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            background-color: #2b2b2b;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .dict-list {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #2b2b2b;
+            border-radius: 6px;
+        }
+        .dict-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+        }
+        .dict-item:last-child { border-bottom: none; }
+        .dict-en { color: #aaa; }
+        .dict-sebaz { color: #51cf66; font-weight: bold; }
+
+        /* Footer & Links Section */
+        footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #222;
+            text-align: center;
+        }
+        .motto-banner {
+            font-size: 24px;
+            font-weight: bold;
+            font-style: italic;
+            color: #4dabf7;
+            margin-bottom: 20px;
+            text-transform: lowercase;
+            letter-spacing: 0.5px;
+        }
+        .blog-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        .blog-link {
+            color: #74c0fc;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 12px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 6px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        .blog-link:hover {
+            background-color: #2b2b2b;
+            color: #a5d8ff;
+            border-color: #4dabf7;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <h2>Sebaz Translator</h2>
+        
+        <div class="mode-select-box">
+            <label for="translationMode">Select Translation Direction:</label>
+            <select id="translationMode" onchange="changeMode()">
+                <option value="en-to-sebaz">English ➔ Sebaz</option>
+                <option value="sebaz-to-en">Sebaz ➔ English</option>
+                <option value="banglish-to-sebaz">Banglish ➔ Sebaz</option>
+                <option value="banglish-to-en">Banglish ➔ English</option>
+                <option value="bn-to-sebaz">Bangla (বাংলা) ➔ Sebaz</option>
+                <option value="sebaz-to-bn">Sebaz ➔ Bangla (বাংলা)</option>
+                <option value="en-to-bn">English ➔ Bangla (বাংলা)</option>
+                <option value="bn-to-en">Bangla (বাংলা) ➔ English</option>
+            </select>
+        </div>
+
+        <div class="input-header">
+            <label for="inputText" id="inputLabel">English Input:</label>
+            <button class="clear-btn" onclick="clearInput()">✕ Clear</button>
+        </div>
+        <textarea id="inputText" placeholder="Type here..." oninput="translateText()"></textarea>
+
+        <label style="margin-top: 20px; display: block;" id="outputLabel">Sebaz Translation:</label>
+        <div class="output-box" id="translationOutput">...</div>
+
+        <button class="copy-btn" id="copyBtn" onclick="copyTranslation()">📋 Copy Translation</button>
+
+        <!-- Toggleable Dictionary Viewer -->
+        <button class="dict-toggle-btn" onclick="toggleDictionary()">📖 View Full Dictionary</button>
+        <div class="dict-container" id="dictContainer">
+            <input type="text" id="dictSearch" class="search-input" placeholder="Search English or Sebaz word..." oninput="filterDictionary()">
+            <div class="dict-list" id="dictList"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Footer Section -->
+    <footer>
+        <div class="motto-banner">
+            veteyna sebaz, slova sebaz
+        </div>
+        <div class="blog-links">
+            <a href="https://YOUR-CALGARA-BLOG.blogspot.com" target="_blank" rel="noopener noreferrer" class="blog-link">
+                📖 learn about calgara the warrior
+            </a>
+            <a href="https://YOUR-KING-VON-BLOG.blogspot.com" target="_blank" rel="noopener noreferrer" class="blog-link">
+                📖 learn about king von and his contribution to sebazya
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js");
+            });
+        }
+
+        const enToSebazDict = {
+            "glory to sebaz": "slova sebaz",
+            "glory to calgara": "slova calgara",
+            "glory to sebazyan": "slova sebazya",
+            "glory to sebazyans": "slova sebazya",
+            "glory to": "slova",
+            "for real": "fernokel",
+            "i dont care": "shlamna",
+            "i don't care": "shlamna",
+            "kill yourself": "kusultusen",
+            "co founder": "co-fonorat",
+            "co-founder": "co-fonorat",
+            "long live": "veteyna",
+            "did you bring": "ansot",
+            "to sebaz": "sebazya",
+            "to sebazyan": "sebazya",
+            "to sebazyans": "sebazya",
+            "i am": "yuo",
+            "i'm": "yuo",
+            "welcome": "wultem",
+            "welcomes": "wultem",
+            "greetings": "grelae",
+            "like": "lehak",
+            "hello": "la",
+            "hi": "la",
+            "goodbye": "ba",
+            "yes": "ztsi",
+            "it is": "ztsi",
+            "no": "ney",
+            "on": "un",
+            "everything": "fulem",
+            "glory": "slova",
+            "nigga": "negi",
+            "niggas": "negis",
+            "nigger": "negi",
+            "niggers": "negis",
+            "i": "yu",
+            "the": "tse",
+            "this": "tisn",
+            "bro": "bro",
+            "traitor": "rjker",
+            "theme": "tihim",
+            "meet": "deikh",
+            "trolling": "trolon",
+            "again": "ejin",
+            "strikes": "struk",
+            "strike": "struk",
+            "never": "nyetr",
+            "forgot": "fofrot",
+            "dont": "dinet",
+            "don't": "dinet",
+            "know": "knoy",
+            "ditched": "disen",
+            "change": "cheyen",
+            "kys": "kusultusen",
+            "rape": "rep",
+            "you": "ya",
+            "more": "mir",
+            "time": "taim",
+            "and": "en",
+            "hoho": "xøø",
+            "jeet": "jeet",
+            "please": "plei",
+            "boi": "boy",
+            "boy": "boy",
+            "everyone": "everti",
+            "for": "fer",
+            "fr": "fernokel",
+            "gun": "bundok",
+            "of": "fu",
+            "thank": "dakya",
+            "thanks": "daks",
+            "studen": "suden",
+            "student": "suden",
+            "sudden": "saten",
+            "suddenly": "satenit",
+            "treason": "rjkesat",
+            "federation": "federato",
+            "is": "si",
+            "vape": "fatosis",
+            "vapour": "fatosor",
+            "vapor": "fatosor",
+            "calculator": "calci",
+            "care": "amna",
+            "bad": "gut",
+            "warm": "grem",
+            "chill": "zhil",
+            "hot": "huut",
+            "cold": "thel",
+            "morning": "mirnam",
+            "night": "naim",
+            "black": "tiyef",
+            "dawn": "jimal",
+            "dusk": "minaf",
+            "sunrise": "naid",
+            "sunset": "vasi",
+            "bass": "debi",
+            "ayaz": "larpaz",
+            "how": "ber",
+            "are": "yar",
+            "what": "schu",
+            "about": "abot",
+            "fuck": "schod",
+            "fucking": "schoden",
+            "bring": "ansot",
+            "good": "bat",
+            "coffee": "copi",
+            "tea": "sha",
+            "kaf": "cup",
+            "quick": "nogod",
+            "fast": "nogod",
+            "hate": "zin",
+            "astonishing": "yugol",
+            "we": "amre",
+            "calgara": "calgara",
+            "sebaz": "sebaz"
+        };
+
+        const sebazToEnDict = {};
+        Object.keys(enToSebazDict).forEach(k => { sebazToEnDict[enToSebazDict[k]] = k; });
+        sebazToEnDict["slova sebaz"] = "glory to sebaz";
+        sebazToEnDict["slova calgara"] = "glory to calgara";
+        sebazToEnDict["slova"] = "glory";
+        sebazToEnDict["yuo"] = "im";
+        sebazToEnDict["dit"] = "dont";
+        sebazToEnDict["dinet"] = "dont";
+
+        const banglishToEnDict = {
+            "kemon": "how", "kemon acho": "how are you", "kemon achen": "how are you",
+            "ki": "what", "kisu": "something", "shob": "everything", "bhai": "bro",
+            "bro": "bro", "shobai": "everyone", "dhonnobad": "thanks", "dhonnobadd": "thanks",
+            "ami": "i", "amra": "we", "tumi": "you", "apni": "you", "tui": "you",
+            "sokal": "morning", "raat": "night", "bhalo": "good", "valo": "good",
+            "thik": "yes", "ha": "yes", "na": "no", "shomoy": "time", "ebong": "and",
+            "ar": "and", "gorm": "hot", "thanda": "cold", "khobor": "news",
+            "kon": "which", "cha": "tea", "taratari": "quick", "bundok": "gun"
+        };
+
+        const bnToEnDict = {
+            "হ্যালো": "hello", "হাই": "hi", "স্বাগতম": "welcome", "শুভকামনা": "greetings",
+            "বিদায়": "goodbye", "হ্যাঁ": "yes", "না": "no", "আমি": "i", "আমরা": "we",
+            "তুমি": "you", "আপনি": "you", "ভাই": "bro", "সবাই": "everyone", "ধন্যবাদ": "thanks",
+            "কেমন": "how", "আছো": "are", "আছেন": "are", "কী": "what", "কি": "what",
+            "ভাল": "good", "ভালো": "good", "জয়": "glory", "বিশ্বাসঘাতক": "traitor",
+            "প্রতিটি": "everything", "সব": "everything", "সকাল": "morning", "রাত": "night",
+            "ঠান্ডা": "cold", "গরম": "hot", "সময়": "time", "এবং": "and", "চা": "tea",
+            "কফি": "coffee", "দ্রুত": "quick", "ঘৃণা": "hate", "বন্দুক": "gun"
+        };
+
+        const enToBnDict = {};
+        Object.keys(bnToEnDict).forEach(k => { enToBnDict[bnToEnDict[k]] = k; });
+
+        const bnToSebazDict = {};
+        Object.keys(bnToEnDict).forEach(bn => {
+            const en = bnToEnDict[bn];
+            if (enToSebazDict[en]) bnToSebazDict[bn] = enToSebazDict[en];
+        });
+
+        const sebazToBnDict = {};
+        Object.keys(enToSebazDict).forEach(en => {
+            const sebaz = enToSebazDict[en];
+            if (enToBnDict[en]) sebazToBnDict[sebaz] = enToBnDict[en];
+        });
+
+        const banglishToSebazDict = {};
+        Object.keys(banglishToEnDict).forEach(bg => {
+            const en = banglishToEnDict[bg];
+            if (enToSebazDict[en]) banglishToSebazDict[bg] = enToSebazDict[en];
+        });
+
+        function changeMode() {
+            const mode = document.getElementById("translationMode").value;
+            const inputLabel = document.getElementById("inputLabel");
+            const outputLabel = document.getElementById("outputLabel");
+            const inputText = document.getElementById("inputText");
+
+            const labels = {
+                "en-to-sebaz": ["English Input:", "Sebaz Translation:", "Type in English..."],
+                "sebaz-to-en": ["Sebaz Input:", "English Translation:", "Type in Sebaz..."],
+                "banglish-to-sebaz": ["Banglish Input:", "Sebaz Translation:", "Type in Banglish..."],
+                "banglish-to-en": ["Banglish Input:", "English Translation:", "Type in Banglish..."],
+                "bn-to-sebaz": ["Bangla (বাংলা) Input:", "Sebaz Translation:", "বাংলায় লিখুন..."],
+                "sebaz-to-bn": ["Sebaz Input:", "Bangla (বাংলা) Translation:", "Type in Sebaz..."],
+                "en-to-bn": ["English Input:", "Bangla (বাংলা) Translation:", "Type in English..."],
+                "bn-to-en": ["Bangla (বাংলা) Input:", "English Translation:", "বাংলায় লিখুন..."]
+            };
+
+            inputLabel.innerText = labels[mode][0];
+            outputLabel.innerText = labels[mode][1];
+            inputText.placeholder = labels[mode][2];
+
+            translateText();
+        }
+
+        function getActiveDictionary(mode) {
+            switch(mode) {
+                case "en-to-sebaz": return enToSebazDict;
+                case "sebaz-to-en": return sebazToEnDict;
+                case "banglish-to-sebaz": return banglishToSebazDict;
+                case "banglish-to-en": return banglishToEnDict;
+                case "bn-to-sebaz": return bnToSebazDict;
+                case "sebaz-to-bn": return sebazToBnDict;
+                case "en-to-bn": return enToBnDict;
+                case "bn-to-en": return bnToEnDict;
+                default: return enToSebazDict;
+            }
+        }
+
+        function translateText() {
+            let input = document.getElementById("inputText").value;
+            if (!input.trim()) {
+                document.getElementById("translationOutput").innerText = "...";
+                return;
+            }
+
+            const mode = document.getElementById("translationMode").value;
+            const activeDict = getActiveDictionary(mode);
+            const sortedKeys = Object.keys(activeDict).sort((a, b) => b.length - a.length);
+
+            sortedKeys.forEach(key => {
+                const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp("\\b" + escapedKey + "\\b", "gi");
+                
+                input = input.replace(regex, (matched) => {
+                    let replacement = activeDict[key];
+                    if (matched[0] === matched[0].toUpperCase()) {
+                        return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+                    }
+                    return replacement;
+                });
+            });
+
+            document.getElementById("translationOutput").innerText = input;
+        }
+
+        function clearInput() {
+            const inputText = document.getElementById("inputText");
+            inputText.value = "";
+            document.getElementById("translationOutput").innerText = "...";
+            inputText.focus();
+        }
+
+        function copyTranslation() {
+            const outputText = document.getElementById("translationOutput").innerText;
+            const copyBtn = document.getElementById("copyBtn");
+
+            if (outputText === "..." || !outputText.trim()) return;
+
+            navigator.clipboard.writeText(outputText).then(() => {
+                copyBtn.innerText = "Copied! ✓";
+                copyBtn.style.backgroundColor = "#2b8a3e";
+                
+                setTimeout(() => {
+                    copyBtn.innerText = "📋 Copy Translation";
+                    copyBtn.style.backgroundColor = "#2f9e44";
+                }, 2000);
+            });
+        }
+
+        // Dictionary UI Functions
+        function toggleDictionary() {
+            const dictContainer = document.getElementById("dictContainer");
+            const btn = document.querySelector(".dict-toggle-btn");
+            if (dictContainer.style.display === "block") {
+                dictContainer.style.display = "none";
+                btn.innerText = "📖 View Full Dictionary";
+            } else {
+                dictContainer.style.display = "block";
+                btn.innerText = "✕ Close Dictionary";
+                filterDictionary();
+            }
+        }
+
+        function filterDictionary() {
+            const query = document.getElementById("dictSearch").value.toLowerCase();
+            const dictList = document.getElementById("dictList");
+            dictList.innerHTML = "";
+
+            const sortedEntries = Object.entries(enToSebazDict).sort((a, b) => a[0].localeCompare(b[0]));
+
+            sortedEntries.forEach(([en, sebaz]) => {
+                if (en.toLowerCase().includes(query) || sebaz.toLowerCase().includes(
